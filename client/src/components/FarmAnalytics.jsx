@@ -33,7 +33,7 @@ export default function FarmAnalytics() {
       }
       const profile = JSON.parse(savedProfile);
 
-      const response = await axios.get(`http://localhost:5000/api/expenses?userId=${profile._id}`);
+      const response = await axios.get(`https://farm-keep-pm47.onrender.com/api/expenses?userId=${profile._id}`);
       const transactions = response.data.data;
 
       if (!transactions || transactions.length === 0) {

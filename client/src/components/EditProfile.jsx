@@ -70,7 +70,7 @@ export default function EditProfile() {
 
     try {
       // 1. Send the data to your new Express backend route!
-      const response = await axios.put(`http://localhost:5000/api/users/update/${userId}`, updatedProfile);
+      const response = await axios.put(`https://farm-keep-pm47.onrender.com/api/users/update/${userId}`, updatedProfile);
       
       // 2. Save the official, updated data straight from the database into local storage
       localStorage.setItem('farmerProfile', JSON.stringify(response.data.data));

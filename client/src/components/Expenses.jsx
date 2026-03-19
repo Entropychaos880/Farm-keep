@@ -30,7 +30,7 @@ export default function Expenses() {
       if (!savedProfile) return;
       const profile = JSON.parse(savedProfile);
 
-      const response = await axios.get(`http://localhost:5000/api/expenses?userId=${profile._id}`);
+      const response = await axios.get(`https://farm-keep-pm47.onrender.com/api/expenses?userId=${profile._id}`);
       setExpenses(response.data.data); 
     } catch (error) {
       console.error("Failed to load expenses:", error);
@@ -77,7 +77,7 @@ export default function Expenses() {
 
     try {
       // Actually send the POST request to save to MongoDB
-      await axios.post('http://localhost:5000/api/expenses/add', payload);
+      await axios.post('https://farm-keep-pm47.onrender.com/api/expenses/add', payload);
       
       // Refresh the list immediately
       fetchExpenses();

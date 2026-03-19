@@ -36,7 +36,7 @@ export default function Dashboard() {
         return;
       }
 
-      const res = await axios.get(`http://localhost:5000/api/ai/insights?userId=${parsedProfile._id}`);
+      const res = await axios.get(`https://farm-keep-pm47.onrender.com/api/ai/insights?userId=${parsedProfile._id}`);
       if (res.data.success && Array.isArray(res.data.data)) {
         setNotifications(res.data.data);
         localStorage.setItem('cachedInsights', JSON.stringify(res.data.data));

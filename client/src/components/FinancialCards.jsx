@@ -15,7 +15,7 @@ export default function FinancialCards() {
         const profile = JSON.parse(savedProfile);
 
         // Fetch the summary using the real userId
-        const response = await axios.get(`http://localhost:5000/api/expenses/summary?userId=${profile._id}`);
+        const response = await axios.get(`https://farm-keep-pm47.onrender.com/api/expenses/summary?userId=${profile._id}`);
         
         // Use the simplified data structure from your updated controller
         const { income, expenses } = response.data.data;

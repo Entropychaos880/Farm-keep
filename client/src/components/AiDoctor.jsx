@@ -31,18 +31,18 @@ export default function AiDoctor({ onActionSuccess }) {
         if (!savedProfile) return;
         const profileData = JSON.parse(savedProfile);
 
-        const chatRes = await axios.get(`http://localhost:5000/api/chat?userId=${profileData._id}`);
+        const chatRes = await axios.get(`https://farm-keep-pm47.onrender.com/api/chat?userId=${profileData._id}`);
         if (chatRes.data.success && chatRes.data.data.length > 0) {
           setChatHistory(chatRes.data.data);
         }
 
-        const statsResponse = await axios.get(`http://localhost:5000/api/expenses/summary?userId=${profileData._id}`);
+        const statsResponse = await axios.get(`https://farm-keep-pm47.onrender.com/api/expenses/summary?userId=${profileData._id}`);
         if (statsResponse.data.success) {
            const { income, expenses } = statsResponse.data.data;
            setFarmStats({ income, expenses, profit: income - expenses });
         }
 
-        const logsResponse = await axios.get(`http://localhost:5000/api/logs?userId=${profileData._id}`);
+        const logsResponse = await axios.get(`https://farm-keep-pm47.onrender.com/api/logs?userId=${profileData._id}`);
         if (logsResponse.data.success) {
            setRecentActivities(logsResponse.data.data.slice(0, 3)); 
         }
@@ -61,7 +61,7 @@ export default function AiDoctor({ onActionSuccess }) {
         const profileData = JSON.parse(savedProfile);
         setIsSyncing(true);
         try {
-          await axios.post('http://localhost:5000/api/chat', {
+          await axios.post('https://farm-keep-pm47.onrender.com/api/chat', {
             userId: profileData._id,
             messages: chatHistory
           });
@@ -112,7 +112,7 @@ export default function AiDoctor({ onActionSuccess }) {
       if (savedProfile) {
         const profileData = JSON.parse(savedProfile);
         try {
-          await axios.delete('http://localhost:5000/api/chat', { data: { userId: profileData._id } });
+          await axios.delete('https://farm-keep-pm47.onrender.com/api/chat', { data: { userId: profileData._id } });
           setChatHistory(defaultChat);
         } catch (error) {
           console.error("Clear Error:", error);
@@ -143,7 +143,7 @@ export default function AiDoctor({ onActionSuccess }) {
         recentFarmHistory: recentActivities.map(log => `- ${new Date(log.date).toLocaleDateString()}: ${log.activityType}`).join(', ')
       });
 
-      const response = await axios.post('http://localhost:5000/api/ai/diagnose', {
+      const response = await axios.post('https://farm-keep-pm47.onrender.com/api/ai/diagnose', {
         userId: profileData._id,
         prompt: userText,
         context: farmContext

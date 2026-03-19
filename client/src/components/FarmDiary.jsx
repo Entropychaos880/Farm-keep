@@ -21,7 +21,7 @@ export default function FarmDiary() {
       if (!savedProfile) return;
       const profile = JSON.parse(savedProfile);
 
-      const response = await axios.get(`http://localhost:5000/api/farmlogs?userId=${profile._id}`);
+      const response = await axios.get(`https://farm-keep-pm47.onrender.com/api/farmlogs?userId=${profile._id}`);
       setLogs(response.data.data);
     } catch (error) {
       console.error("Failed to load farm logs:", error);
@@ -48,7 +48,7 @@ export default function FarmDiary() {
         date: formData.date
       };
 
-      await axios.post('http://localhost:5000/api/farmlogs/add', payload);
+      await axios.post('https://farm-keep-pm47.onrender.com/api/farmlogs/add', payload);
       
       fetchLogs(); // Refresh the list
       setFormData({ ...formData, description: '' }); // Clear the text input

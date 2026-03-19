@@ -42,7 +42,7 @@ export default function Signup() {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/signup', completeProfile);
+      const response = await axios.post('https://farm-keep-pm47.onrender.com/api/users/signup', completeProfile);
       localStorage.setItem('farmerProfile', JSON.stringify(response.data.data));
       navigate('/');
     } catch (err) {
