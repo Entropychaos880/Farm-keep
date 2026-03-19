@@ -34,7 +34,7 @@ app.use(cors({
 }));
 
 // IMPORTANT: Handle the preflight OPTIONS request explicitly
-app.options('*', cors());
+app.options('(.*)', cors());
 app.use(express.json()); // Allows the server to read JSON data
 app.use('/api/expenses', require('./routes/expenseRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
