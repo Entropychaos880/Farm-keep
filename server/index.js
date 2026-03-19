@@ -11,16 +11,30 @@ const app = express();
 // Connect to Database
 connectDB();
 
-// Allow your specific Vercel URL
+
+const allowedOrigins = [
+  'https://farm-keep.vercel.app',
+  'http://localhost:5173' 
+];
+
 app.use(cors({
-  // Add your local development URL to the array
-  origin: [
-    'http://localhost:5173', 
-    'https://your-farm-keep-frontend.vercel.app'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
+// IMPORTANT: Handle the preflight OPTIONS request explicitly
+app.options('*', cors());
 app.use(express.json()); // Allows the server to read JSON data
 app.use('/api/expenses', require('./routes/expenseRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
