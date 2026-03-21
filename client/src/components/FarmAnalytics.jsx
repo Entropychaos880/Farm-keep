@@ -210,22 +210,47 @@ export default function FarmAnalytics() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-96">
-               <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
-                Expense Distribution
-              </h2>
-              <ResponsiveContainer width="100%" height="85%">
-                <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" labelLine={false} label={renderCustomizedLabel} outerRadius={110} dataKey="value">
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip formatter={(value) => `KES ${value.toLocaleString()}`} contentStyle={{fontFamily: 'monospace', fontSize: '12px'}} />
-                  <Legend layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{fontFamily: 'monospace', fontSize: '12px'}}/>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+           
+            {/* Optimized Pie Chart Section */}
+<div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-[500px] md:h-96">
+  <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
+    Expense Distribution
+  </h2>
+  <ResponsiveContainer width="100%" height="85%">
+    <PieChart>
+      <Pie 
+        data={pieData} 
+        cx="50%" 
+        cy="45%" // Slightly raised to make room for bottom legend
+        labelLine={false} 
+        label={renderCustomizedLabel} 
+        outerRadius={80} // Reduced slightly for better mobile fit
+        dataKey="value"
+      >
+        {pieData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+      <RechartsTooltip 
+        formatter={(value) => `KES ${value.toLocaleString()}`} 
+        contentStyle={{fontFamily: 'monospace', fontSize: '12px'}} 
+      />
+      {/* Changed: verticalAlign is now "bottom" for mobile compatibility. 
+          The Legend will now wrap correctly below the chart.
+      */}
+      <Legend 
+        layout="horizontal" 
+        verticalAlign="bottom" 
+        align="center" 
+        wrapperStyle={{ 
+          fontFamily: 'monospace', 
+          fontSize: '10px',
+          paddingTop: '20px' 
+        }}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-96">
               <h2 className="text-sm font-bold text-gray-800 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">

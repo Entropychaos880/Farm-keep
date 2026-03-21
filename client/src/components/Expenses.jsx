@@ -23,7 +23,7 @@ export default function Expenses() {
     fetchExpenses();
   }, []);
 
-  // FIX 1: Fetch only the logged-in user's transactions
+  // Fetch only the logged-in user's transactions
   const fetchExpenses = async () => {
     try {
       const savedProfile = localStorage.getItem('farmerProfile');
@@ -45,7 +45,7 @@ export default function Expenses() {
     setHarvestData({ ...harvestData, [e.target.name]: e.target.value });
   };
 
-  // FIX 2: Correctly POST the data to the database
+  // Correctly POST the data to the database
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -67,8 +67,8 @@ export default function Expenses() {
     }
 
     const payload = {
-      userId: profile._id, // Attach the real ID
-      type: txType,        // 'Expense' or 'Harvest'
+      userId: profile._id, 
+      type: txType,        
       category: finalCategory,
       amount: finalAmount,
       description: formData.description,
@@ -76,13 +76,8 @@ export default function Expenses() {
     };
 
     try {
-      // Actually send the POST request to save to MongoDB
       await axios.post('https://farm-keep-pm47.onrender.com/api/expenses/add', payload);
-      
-      // Refresh the list immediately
       fetchExpenses();
-      
-      // Reset form
       setFormData({ date: getTodayDate(), category: 'Fertilizer', amount: '', description: '' });
       setHarvestData({ kg: '', pricePerKg: '120' });
     } catch (error) {
@@ -102,18 +97,19 @@ export default function Expenses() {
         
         {/* ADD TRANSACTION FORM */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-1 h-fit">
-          <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+          {/* UPDATED: Responsive Toggle Container */}
+          <div className="flex flex-col sm:flex-row bg-gray-100 p-1.5 rounded-xl mb-6 gap-1">
             <button 
               type="button"
               onClick={() => setTxType('Expense')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition ${txType === 'Expense' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition ${txType === 'Expense' ? 'bg-white text-red-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <ArrowDownCircle size={16} /> Expense
             </button>
             <button 
               type="button"
               onClick={() => setTxType('Harvest')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition ${txType === 'Harvest' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition ${txType === 'Harvest' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
             >
               <ArrowUpCircle size={16} /> Harvest
             </button>
@@ -164,7 +160,8 @@ export default function Expenses() {
                 </div>
               </>
             ) : (
-              <div className="grid grid-cols-2 gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
+              /* UPDATED: Responsive Harvest Input Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-green-50 rounded-xl border border-green-100">
                 <div>
                   <label className="block text-xs font-bold text-green-800 mb-1">Kilograms</label>
                   <input 
@@ -188,7 +185,7 @@ export default function Expenses() {
                     required
                   />
                 </div>
-                <div className="col-span-2 mt-2 flex justify-between items-center border-t border-green-200 pt-2">
+                <div className="col-span-1 sm:col-span-2 mt-2 flex justify-between items-center border-t border-green-200 pt-2">
                   <span className="text-sm text-green-700 font-medium">Value:</span>
                   <span className="text-lg font-bold text-green-800">
                     KES {(parseFloat(harvestData.kg || 0) * parseFloat(harvestData.pricePerKg || 0)).toLocaleString()}

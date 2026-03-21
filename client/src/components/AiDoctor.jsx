@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, ImagePlus, User, Bot, Loader2, Copy, Check, ArrowDown, Trash2 } from 'lucide-react';
+import { Send, ImagePlus, Bot, Loader2, Copy, Check, ArrowDown, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 
@@ -20,9 +20,20 @@ export default function AiDoctor({ onActionSuccess }) {
   const [recentActivities, setRecentActivities] = useState([]);
 
   const chatContainerRef = useRef(null);
+  const textareaRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
 
+  // Auto-focus the input on load for mobile keyboards
+ useEffect(() => {
+    const focusTimeout = setTimeout(() => {
+      if (textareaRef.current && window.innerWidth < 768) {
+        textareaRef.current.focus({ preventScroll: true });
+      }
+    }, 100);
+    return () => clearTimeout(focusTimeout);
+  }, []);
+  
   // 1. Initial Load from MongoDB
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -53,7 +64,7 @@ export default function AiDoctor({ onActionSuccess }) {
     fetchInitialData();
   }, [onActionSuccess]);
 
-  // 2. Persistent Save to MongoDB (with 2s debounce to prevent race conditions)
+  // 2. Persistent Save to MongoDB (with 2s debounce)
   useEffect(() => {
     const syncChat = async () => {
       const savedProfile = localStorage.getItem('farmerProfile');
@@ -128,7 +139,7 @@ export default function AiDoctor({ onActionSuccess }) {
     const userText = message;
     setMessage('');
     
-    // OPTIMISTIC UPDATE: Functional state update for user message
+    // OPTIMISTIC UPDATE
     setChatHistory(prev => [...prev, { sender: 'user', text: userText }]);
     setIsLoading(true);
 
@@ -150,7 +161,6 @@ export default function AiDoctor({ onActionSuccess }) {
       });
 
       if (response.data.success) {
-         // FUNCTIONAL UPDATE: Prevents the "disappearing message" race condition
          setChatHistory(current => [...current, { sender: 'ai', text: response.data.response }]);
          if (response.data.actionTaken && onActionSuccess) onActionSuccess();
       }
@@ -158,14 +168,18 @@ export default function AiDoctor({ onActionSuccess }) {
        setChatHistory(current => [...current, { sender: 'ai', text: "Connection lost. Please try again." }]);
     } finally {
       setIsLoading(false);
+      // Optional: keep focus on the textarea after sending so the keyboard stays up
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
     }
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[600px] overflow-hidden relative font-sans">
+    <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[calc(100vh-120px)] md:h-[600px] overflow-hidden relative font-sans">
       
       {/* HEADER */}
-      <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+      <div className="p-4 bg-gray-50 border-b border-gray-100 flex justify-between items-center shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
             <Bot size={24} />
@@ -233,8 +247,8 @@ export default function AiDoctor({ onActionSuccess }) {
         </button>
       )}
 
-      {/* INPUT FIELD */}
-      <div className="p-4 bg-white border-t border-gray-100">
+      {/* INPUT FIELD (Locked to bottom) */}
+      <div className="p-4 bg-white border-t border-gray-100 shrink-0 w-full z-10">
         <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
           <label className="cursor-pointer text-gray-400 hover:text-blue-600 p-3 bg-gray-50 rounded-2xl border border-gray-100 transition-colors mb-1">
             <input type="file" accept="image/*" className="hidden" onChange={(e) => {
@@ -244,11 +258,12 @@ export default function AiDoctor({ onActionSuccess }) {
             <ImagePlus size={20} />
           </label>
           <textarea 
+            ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage(e)}
             placeholder="Type your message..." 
-            className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all resize-none h-12 max-h-32"
+            className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-all resize-none min-h-[48px] max-h-32"
           />
           <button type="submit" disabled={!message.trim() || isLoading} className="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 disabled:opacity-50 transition-all mb-1 shadow-md">
             <Send size={20} />
