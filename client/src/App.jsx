@@ -36,7 +36,8 @@ function App() {
   return (
     <div className={`min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans relative ${isAuthPage ? '' : 'pb-16 md:pb-0'}`}>
       
-      {!isAuthPage && <Sidebar />}
+      {/* UPDATED: Pass setAuth to Sidebar */}
+      {!isAuthPage && <Sidebar setAuth={setIsAuthenticated} />}
 
       <main className={`flex-1 flex flex-col ${isAuthPage ? 'p-0' : 'p-4 md:p-8 bg-gray-50'}`}>
         <Routes>
@@ -66,7 +67,8 @@ function App() {
         </Routes>
       </main>
 
-      {!isAuthPage && <MobileNav />}
+      {/* UPDATED: Pass setAuth to MobileNav */}
+      {!isAuthPage && <MobileNav setAuth={setIsAuthenticated} />}
 
       {/* AI Chat Button & Overlay */}
       {!isAuthPage && (

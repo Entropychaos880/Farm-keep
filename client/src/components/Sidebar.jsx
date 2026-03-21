@@ -7,10 +7,11 @@ import {
   User as UserIcon, 
   CalendarDays, 
   BarChart3, 
-  LogOut // Import the logout icon
+  LogOut 
 } from 'lucide-react';
 
-export default function Sidebar() {
+// Accept setAuth as a prop from App.jsx
+export default function Sidebar({ setAuth }) {
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -18,18 +19,24 @@ export default function Sidebar() {
   const profile = savedProfile ? JSON.parse(savedProfile) : { fullName: 'Guest Farmer' };
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard }, // Updated path to match App.jsx
     { name: 'Transactions', path: '/expenses', icon: Receipt },
     { name: 'Analytics', path: '/analytics', icon: BarChart3 },
     { name: 'Farm Diary', path: '/diary', icon: BookOpen },
     { name: 'Calendar', path: '/calendar', icon: CalendarDays }, 
   ];
 
-  // --- LOGOUT FUNCTION ---
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to log out?")) {
-      localStorage.removeItem('farmerProfile'); // Clear the session
-      navigate('/login'); // Redirect to login page
+      // 1. Clear the local storage session
+      localStorage.removeItem('farmerProfile'); 
+      
+      // 2. Update the global Auth state in App.jsx
+      // This forces the router to re-evaluate the protected routes
+      if (setAuth) setAuth(false); 
+      
+      // 3. Clear any remaining local state and redirect
+      navigate('/login', { replace: true }); 
     }
   };
 
