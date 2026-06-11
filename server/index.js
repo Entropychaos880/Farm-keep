@@ -13,9 +13,6 @@ const farmLogRoutes = require('./routes/farmLogRoutes');
 
 const app = express();
 
-// Connect to Database
-connectDB();
-
 // --- Zero-Trust CORS Architecture ---
 const allowedOrigins = [
   'https://farm-keep.vercel.app',
@@ -68,9 +65,33 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'An unexpected internal server error occurred.' });
 });
 
-// Server Initialization
+// --- Strict Startup Sequence & Diagnostics ---
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running securely on port ${PORT}`);
-});
+const startServer = async () => {
+  console.log('--- PRODUCTION DIAGNOSTIC CHECK ---');
+  console.log('1. MONGO_URI Type:', typeof process.env.MONGO_URI);
+  
+  if (process.env.MONGO_URI) {
+    // Safely log the protocol and cluster address, masking the credentials
+    const sanitizedUri = process.env.MONGO_URI.replace(/\/\/.*@/, '//***:***@');
+    console.log('2. Sanitized URI:', sanitizedUri);
+  } else {
+    console.log('2. MONGO_URI is UNDEFINED');
+  }
+  console.log('-----------------------------------');
+
+  try {
+    // Await the database connection BEFORE opening the HTTP port
+    await connectDB();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running securely on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Critical Failure: Unable to initialize application due to database connection failure.', error);
+    process.exit(1);
+  }
+};
+
+startServer();
